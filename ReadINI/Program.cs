@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.CodeDom.Compiler;
 
 namespace DictionaryDemonstration
 {
@@ -15,13 +16,11 @@ namespace DictionaryDemonstration
         static void Main(string[] args)
         {
             string[] dic = new string[] {};
-            string[] word = new string[] { };
             string line = "";
             string[] start = new string[] {};
             string[] setting = new string[8];
-            List<string> letter1 = new List<string>();
-            int[] settingnum = new int[] {};
             int forcount = 0;
+            bool indent = true;
 
             using (StreamReader sr = new StreamReader("Setup.ini"))
             {
@@ -37,9 +36,16 @@ namespace DictionaryDemonstration
                 }
             }
             int charper = int.Parse(setting[1]);
-            int indent = int.Parse(setting[3]);
+            if (int.Parse(setting[3]) == 1)
+            {
+                indent = true;
+            }
+            else
+            {
+                indent = false;
+            }
             string inside = setting[5];
-            string outsie = setting[7];
+            string outside = setting[7];
 
             using (StreamReader sr = new StreamReader(inside))
             {
@@ -49,22 +55,32 @@ namespace DictionaryDemonstration
                 }
             }
             int charpiece = 0;
-            for (int x =0; x <dic.Length; x++)
+            using (StreamWriter sw = new StreamWriter(outside))
             {
-               if(charpiece + dic[x].Length>= charper -1)
+                if (indent)
                 {
-                    charpiece = 0;
-                    Console.WriteLine(dic[x] + " ");
-                    charpiece += dic[x].Length + 1;                                       
+                    for (int i = 0; i < 10; i++)
+                    {
+                        sw.Write(" ");
+                        charpiece++;
+                    }
                 }
-               else
+                for (int x = 0; x < dic.Length; x++)
                 {
-                    charpiece += dic[x].Length + 1;
-                    Console.Write(dic[x] + " ");
+                    if (charpiece + dic[x].Length >= charper)
+                    {
+                        sw.WriteLine();
+                        sw.Write(dic[x] + " ");
+                        charpiece = dic[x].Length + 1;
+                    }
+                    else
+                    {
+                        sw.Write(dic[x] + " ");
+                        charpiece += dic[x].Length + 1;
+                    }
                 }
             }
-            
-       
+            Console.WriteLine("The task is Complete. Format now applied in the notepad");
             Console.ReadKey();
         }
     }
